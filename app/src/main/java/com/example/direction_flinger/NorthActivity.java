@@ -1,5 +1,6 @@
 package com.example.direction_flinger;
 
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -9,13 +10,27 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
 
-public class NorthActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+public class NorthActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, SensorEventListener {
     private GestureDetectorCompat mDetector;
     float initialX, initialY;
+    private SensorManager sensorManager;
+
+    private float lastX;
+    private float lastY;
+    private float lastZ;
+    private float geoX;
+    private float geoY;
+    private float geoZ;
+
+    private ImageView imageShake;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +39,8 @@ public class NorthActivity extends AppCompatActivity implements GestureDetector.
 
         mDetector=new GestureDetectorCompat(this,this);
         mDetector.setOnDoubleTapListener(this);
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     }
 
     @Override
@@ -122,4 +139,35 @@ public class NorthActivity extends AppCompatActivity implements GestureDetector.
         //Log.d("direction", String.valueOf(velocityY));
         return false;
     }
+
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+
+        if(sensorEvent.sensor.getType()  == Sensor.TYPE_ACCELEROMETER) {
+            lastX = sensorEvent.values[0];
+            lastY = sensorEvent.values[1];
+            lastZ = sensorEvent.values[2];
+        }else if(sensorEvent.sensor.getType()  == Sensor.TYPE_GRAVITY) {
+            geoX = sensorEvent.values[0];
+            geoY = sensorEvent.values[1];
+            geoZ = sensorEvent.values[2];
+        }
+        float shakeX = Math.abs(Math.abs(lastX)-Math.abs(geoX));
+        float shakeY = Math.abs(Math.abs(lastY)-Math.abs(geoY));
+        float shakeZ = Math.abs(Math.abs(lastY)-Math.abs(geoY));
+
+        //if "significant" shake in x or y or z direction
+        if( shakeX > 11 || shakeY > 11 || shakeZ> 11){
+            final Animation animShake = AnimationUtils.loadAnimation(this, R.anim.shake);
+            imageShake = (ImageView) findViewById(R.id.image);
+            imageShake.startAnimation(animShake);
+            }
+        }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
 }
