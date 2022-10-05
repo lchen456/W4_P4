@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
@@ -30,13 +31,14 @@ public class NorthActivity extends AppCompatActivity implements GestureDetector.
     private float geoZ;
 
     private ImageView imageShake;
-
+    private TextView north;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_north);
 
+        north = (TextView) findViewById(R.id.north);
         mDetector=new GestureDetectorCompat(this,this);
         mDetector.setOnDoubleTapListener(this);
 
@@ -158,9 +160,11 @@ public class NorthActivity extends AppCompatActivity implements GestureDetector.
         float shakeZ = Math.abs(Math.abs(lastY)-Math.abs(geoY));
 
         //if "significant" shake in x or y or z direction
-        if( shakeX > 11 || shakeY > 11 || shakeZ> 11){
+        if( shakeX > 3 || shakeY > 3 || shakeZ> 3){
             final Animation animShake = AnimationUtils.loadAnimation(this, R.anim.shake);
-            imageShake = (ImageView) findViewById(R.id.image);
+            //String shakes = String.valueOf(shakeX) + String.valueOf(shakeY) + String.valueOf(shakeZ);
+            //north.setText(shakes);
+            imageShake = findViewById(R.id.image);
             imageShake.startAnimation(animShake);
             }
         }
@@ -170,4 +174,16 @@ public class NorthActivity extends AppCompatActivity implements GestureDetector.
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ALL), sensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
 }
+
