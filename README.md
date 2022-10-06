@@ -22,8 +22,8 @@ public boolean onTouchEvent(MotionEvent event) {
  //compare the values   
  //finalX - initialX for horizontal direction  
  //finalY - initialY for vertical direction  
- //depending on the direction, we declare and initialize an intent directionIntent to which we feed an activity .java file  
- //then we startActivity(directionIntent)  
+ //depending on the direction, we declare and initialize an intent _directionIntent_ to which we feed an activity .java file  
+ //then we startActivity(_directionIntent_)  
  //and called a transition to make it look smoother ;)  
 }  
 
